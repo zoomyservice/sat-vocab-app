@@ -4,7 +4,7 @@ import {
   ActivityIndicator, StyleSheet, StatusBar, Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { WORDS } from "./words";
+import { WORDS, EXPL } from "./words";
 
 const C = { navy:"#1F3864", blue:"#2E5C9E", bg:"#f4f6fb", card:"#fff", green:"#1E6B2F",
   greenbg:"#E2EFDA", red:"#9C2A2A", redbg:"#FCE4E4", gray:"#6B7280", line:"#d8e0ee" };
@@ -205,14 +205,10 @@ function Quiz({ view, setView, recordAttempt, workerUrl, geminiKey }) {
       <View style={[s.fb, view._ok ? s.fbOk : s.fbNo]}>
         <Text style={{ color: view._ok?C.green:C.red, fontWeight:"700" }}>{view._ok ? "✓ Correct" : "✗ Not quite"}</Text></View>
       <View style={s.expBox}>
-        <Text style={{ fontWeight:"800", color:C.navy }}>{word[0]} <Text style={s.pos}>{word[1]}</Text></Text>
-        <Text style={{ marginVertical:4 }}>{word[2]}</Text>
-        <Text><Text style={{ fontWeight:"800", color:C.blue }}>Why: </Text>{
-          curMode==="context" ? `The blank needs a word meaning “${word[2]}” — that's what ${word[0]} means, so it fits; the other choices don't.`
-          : curMode==="word" ? `Of the choices, only ${word[0]} means “${word[2]}.”`
-          : curMode==="recall" ? `The word meaning “${word[2]}” is ${word[0]}.`
-          : `${word[0]} means “${word[2]}.”`}</Text>
-        <Text style={{ marginTop:6 }}><Text style={{ fontWeight:"800", color:C.blue }}>In a sentence: </Text><Text style={{ fontStyle:"italic" }}>{cloze(word[3],word[0]).replace("______", word[0])}</Text></Text>
+        <Text style={{ fontWeight:"800", color:C.navy, fontSize:16 }}>{word[0]} <Text style={s.pos}>{word[1]}</Text></Text>
+        <Text style={{ marginVertical:4, color:C.gray }}>{word[2]}</Text>
+        <Text style={{ lineHeight:21 }}>{EXPL[word[0]] || (word[2] + ".")}</Text>
+        <Text style={{ marginTop:8 }}><Text style={{ fontWeight:"800", color:C.blue }}>In a sentence: </Text><Text style={{ fontStyle:"italic" }}>{cloze(word[3],word[0]).replace("______", word[0])}</Text></Text>
       </View>
       <Btn sec title="🤖 Ask the coach for a deeper explanation" style={{ marginTop:10 }} onPress={() => setChat(true)} />
       <Btn title={i+1>=words.length ? "See results" : "Next"} style={{ marginTop:10 }} onPress={next} />
@@ -245,11 +241,11 @@ function ChatModal({ visible, onClose, word, workerUrl, geminiKey }) {
       if (workerUrl) {
         const r = await fetch(workerUrl.replace(/\/+$/,"")+"/tutor", { method:"POST", headers:{"Content-Type":"application/json"},
           body: JSON.stringify({ question:{ subtopic:"Vocabulary (words in context)",
-            text:`The student is studying the SAT word "${word[0]}" (${word[1]}), meaning: ${word[2]}. Example: ${word[3]}`,
-            correct:word[0], explanation:word[2] }, history:hist, message:t }) });
+            text:`The student is studying the SAT word "${word[0]}" (${word[1]}), meaning: ${word[2]}. Example: ${word[3]}. Study note already shown: ${EXPL[word[0]]||""}`,
+            correct:word[0], explanation:EXPL[word[0]]||word[2] }, history:hist, message:t }) });
         const d = await r.json(); reply = d.reply || "(no reply)";
       } else {
-        const ctx = `${COACH_SYS}\n\nThe student is studying the SAT word "${word[0]}" (${word[1]}), meaning: ${word[2]}. Example sentence: ${word[3]}`;
+        const ctx = `${COACH_SYS}\n\nThe student is studying the SAT word "${word[0]}" (${word[1]}), meaning: ${word[2]}. Example sentence: ${word[3]}. Study note already shown to the student: ${EXPL[word[0]]||""}`;
         const contents = [{ role:"user", parts:[{ text:ctx }] }, { role:"model", parts:[{ text:"Ready to help with this word." }] }];
         hist.forEach(m => contents.push({ role: m.role === "assistant" ? "model" : "user", parts:[{ text:m.text }] }));
         contents.push({ role:"user", parts:[{ text:t }] });
