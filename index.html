@@ -1,0 +1,364 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>David's SAT Vocabulary</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E5C9E;--bg:#f4f6fb;--card:#fff;--green:#1E6B2F;--greenbg:#E2EFDA;--red:#9C2A2A;--redbg:#FCE4E4;--amber:#8A6D1A;--amberbg:#FFF3CD;--gray:#6B7280;--line:#d8e0ee;}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;-webkit-tap-highlight-color:transparent;}
+body{margin:0;background:var(--bg);color:#152038;line-height:1.5;}
+.wrap{max-width:680px;margin:0 auto;padding:16px 14px 70px;}
+header{border-bottom:4px solid var(--navy);padding-bottom:9px;margin-bottom:8px;}
+h1{font-size:23px;color:var(--navy);margin:0;}
+.sub{color:var(--gray);font-size:13.5px;margin:4px 0 0;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 1px 3px rgba(20,40,80,.05);}
+.row{display:flex;gap:10px;flex-wrap:wrap;}
+.btn{background:var(--navy);color:#fff;border:none;border-radius:11px;padding:13px 18px;font-size:15px;font-weight:700;cursor:pointer;}
+.btn.sec{background:#fff;color:var(--navy);border:1.5px solid var(--navy);}
+.btn.wide{display:block;width:100%;margin-top:10px;}
+.btn:disabled{opacity:.4;}
+.stage{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;margin:8px 0;cursor:pointer;}
+.stage:hover{border-color:var(--blue);}
+.stage .t{font-weight:800;color:var(--navy);font-size:16px;}
+.stage .m{font-size:12.5px;color:var(--gray);}
+.mbar{height:6px;background:#e3e9f4;border-radius:6px;overflow:hidden;margin-top:6px;width:120px;}
+.mbar>div{height:100%;background:var(--green);}
+.pill{display:inline-block;background:#eaf1fb;color:var(--blue);border-radius:999px;padding:2px 11px;font-size:12px;font-weight:700;margin-bottom:8px;}
+.word{font-size:30px;font-weight:800;color:var(--navy);}
+.pos{font-size:14px;color:var(--gray);font-style:italic;margin-left:8px;font-weight:600;}
+.def{font-size:19px;margin:12px 0;}
+.sent{font-size:15.5px;color:#39507a;font-style:italic;background:#f6f9ff;border-left:4px solid var(--blue);border-radius:8px;padding:10px 12px;}
+.choice{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:11px;padding:13px 15px;margin:8px 0;cursor:pointer;font-size:16px;}
+.choice:hover{border-color:var(--blue);}
+.choice.correct{background:var(--greenbg);border-color:var(--green);color:var(--green);font-weight:700;}
+.choice.wrong{background:var(--redbg);border-color:var(--red);color:var(--red);}
+.choice.dim{pointer-events:none;opacity:.97;}
+input.fill{width:100%;padding:13px 15px;font-size:17px;border:1.5px solid var(--line);border-radius:11px;}
+.fb{border-radius:10px;padding:11px 13px;margin-top:12px;font-size:15px;}
+.fb.ok{background:var(--greenbg);color:var(--green);}.fb.no{background:var(--redbg);color:var(--red);}
+.prog{font-size:13px;color:var(--gray);font-weight:700;}
+.bar{height:7px;background:#e3e9f4;border-radius:6px;overflow:hidden;margin:6px 0 12px;}
+.bar>div{height:100%;background:var(--blue);transition:.2s;}
+.big{font-size:42px;font-weight:800;color:var(--navy);}
+a.link{color:var(--blue);cursor:pointer;font-weight:700;}
+.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+.mode{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px 12px;cursor:pointer;text-align:center;font-weight:700;color:var(--navy);font-size:14.5px;}
+.mode:hover{border-color:var(--blue);background:#f0f5ff;}
+.mode small{display:block;color:var(--gray);font-weight:500;font-size:11.5px;margin-top:3px;}
+.center{text-align:center;}
+.flip{min-height:150px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;}
+</style>
+<div class="wrap">
+  <header>
+    <h1>David's SAT Vocabulary</h1>
+    <div class="sub">The most-used SAT words, in stages. Five ways to practice each set. Tip: add this page to your home screen — it works like an app, offline.</div>
+  </header>
+  <div id="app"></div>
+</div>
+<script>
+/* ===== WORD BANK (ordered most-useful first; chunked into stages) ===== */
+/* {w: word, pos, d: short definition, s: example sentence containing the base word} */
+const WORDS=[
+["advocate","v","to publicly support or argue for","Senators who advocate for the bill say it will reduce poverty."],
+["undermine","v","to weaken","Constant criticism can undermine a student's confidence."],
+["bolster","v","to strengthen or support","New evidence helped bolster the scientist's theory."],
+["nuanced","adj","showing subtle distinctions","Her nuanced argument acknowledged both sides of the debate."],
+["ambiguous","adj","open to more than one meaning","The poem's ambiguous ending left readers guessing."],
+["arbitrary","adj","based on whim, not reason","The rule felt arbitrary, with no clear purpose."],
+["plausible","adj","believable; reasonable","The detective offered a plausible explanation for the theft."],
+["substantiate","v","to back up with evidence","The reporter could not substantiate the rumor."],
+["refute","v","to prove false","The new study refutes the popular belief about the diet."],
+["concede","v","to admit, often reluctantly","Even critics concede that the design is innovative."],
+["pervasive","adj","spread throughout","Smartphones have a pervasive influence on daily life."],
+["mitigate","v","to make less severe","Planting trees can mitigate the heat in crowded cities."],
+["exacerbate","v","to make worse","Ignoring a small leak will only exacerbate the damage."],
+["scrutinize","v","to examine closely","Editors scrutinize every claim before publishing it."],
+
+["tenuous","adj","weak; flimsy","The link between the two events is tenuous at best."],
+["inherent","adj","existing as a built-in quality","There are risks inherent in any experiment."],
+["superfluous","adj","more than is needed","The essay improved once she cut the superfluous details."],
+["paradox","n","a seemingly contradictory truth","It is a paradox that spending money can sometimes save it."],
+["candor","n","honesty; frankness","She answered the hard questions with surprising candor."],
+["skepticism","n","a doubting, questioning attitude","Scientists greeted the bold claim with skepticism."],
+["pragmatic","adj","practical; focused on results","He took a pragmatic approach, choosing what actually worked."],
+["ubiquitous","adj","found everywhere","Plastic packaging has become ubiquitous in stores."],
+["anomaly","n","something that deviates from the norm","The unusually warm winter was an anomaly."],
+["proliferate","v","to increase rapidly","Online courses proliferate whenever demand rises."],
+["facilitate","v","to make easier","A good moderator can facilitate a productive discussion."],
+["hinder","v","to slow down or block","Heavy rain can hinder a rescue effort."],
+["curtail","v","to cut short; reduce","A drought may force a city to curtail water use."],
+["endorse","v","to give public approval to","Several doctors endorse the new guidelines."],
+
+["empirical","adj","based on observation or experiment","Empirical data, not opinion, settled the question."],
+["derivative","adj","copied; unoriginal","Critics called the film derivative of older classics."],
+["inevitable","adj","certain to happen","With steady practice, improvement is inevitable."],
+["meticulous","adj","very careful and precise","She kept meticulous notes of every result."],
+["redundant","adj","needlessly repetitive","Saying free gift is redundant."],
+["viable","adj","workable; able to succeed","Solar power is now a viable energy source."],
+["prudent","adj","cautious; sensible","It is prudent to save part of every paycheck."],
+["indifferent","adj","showing no interest or concern","He was indifferent to the team's victory."],
+["reconcile","v","to make two things consistent","It is hard to reconcile the two eyewitness accounts."],
+["perpetuate","v","to keep something (often bad) going","Stereotypes in media can perpetuate prejudice."],
+["diminish","v","to make or become smaller","Fame did not diminish her work ethic."],
+["attribute","v","to credit a cause or source","Experts attribute the decline to overfishing."],
+["discern","v","to detect or distinguish","It was hard to discern the truth from the rumors."],
+["cohesive","adj","well-unified; sticking together","A cohesive essay flows from one idea to the next."],
+
+["inconsequential","adj","unimportant; insignificant","The error was inconsequential and changed nothing."],
+["ameliorate","v","to make a bad situation better","The new policy aims to ameliorate traffic."],
+["innocuous","adj","harmless","The comment was innocuous, meant only as a joke."],
+["ambivalent","adj","having mixed feelings","She felt ambivalent about moving to a new city."],
+["contempt","n","scorn; strong disrespect","He looked at the cheater with contempt."],
+["quotidian","adj","ordinary; everyday","The diary records quotidian details of farm life."],
+["overt","adj","open; not hidden","There was no overt sign of trouble."],
+["sanction","n","official approval (or a penalty, by context)","The committee gave its sanction to the plan."],
+["postulate","v","to assume or put forward as true","Scientists postulate that the universe is expanding."],
+["antagonistic","adj","hostile; opposed","The two nations had long been antagonistic."],
+["supersede","v","to replace as superior","The new model will supersede last year's version."],
+["preclude","v","to prevent; rule out","A tight budget can preclude a long vacation."],
+["volatile","adj","unstable; quick to change","Stock prices were volatile all week."],
+["autonomous","adj","independent; self-governing","The region became autonomous after the treaty."],
+
+["fluctuate","v","to rise and fall irregularly","Temperatures fluctuate sharply in the desert."],
+["comprehensive","adj","complete; covering everything","The report gave a comprehensive review of the data."],
+["compelling","adj","convincing; persuasive","She made a compelling case for change."],
+["coherent","adj","logically connected; clear","His argument was clear and coherent."],
+["disparate","adj","fundamentally different","The class brought together students from disparate backgrounds."],
+["negligible","adj","so small it can be ignored","The cost difference was negligible."],
+["intrinsic","adj","belonging naturally; essential","Curiosity has intrinsic value in learning."],
+["speculative","adj","based on guessing","The theory is still speculative."],
+["didactic","adj","intended to teach","The novel is didactic, full of moral lessons."],
+["aesthetic","adj","relating to beauty or art","The building's aesthetic appeal drew many visitors."],
+["reverence","n","deep respect","She spoke of her old teacher with reverence."],
+["nostalgia","n","a longing for the past","Old songs filled him with nostalgia."],
+["apprehension","n","anxiety; worry","She felt apprehension before the big exam."],
+["candid","adj","honest and direct","In a candid interview, the star admitted her mistakes."],
+
+["yield","v","to produce, or to give way","Careful experiments often yield surprising results."],
+["foster","v","to encourage the growth of","Good teachers foster a love of reading."],
+["augment","v","to add to; increase","He works a second job to augment his income."],
+["alleviate","v","to ease or lessen","This medicine can alleviate her pain."],
+["impede","v","to obstruct","Fallen trees can impede traffic."],
+["corroborate","v","to confirm with more evidence","A second witness can corroborate her story."],
+["elucidate","v","to make clear; explain","The diagram helps elucidate how the engine works."],
+["tentative","adj","hesitant; not certain","They reached a tentative agreement."],
+["robust","adj","strong; well-supported","The findings rest on robust evidence."],
+["unprecedented","adj","never done or seen before","The storm caused unprecedented damage."],
+["conventional","adj","traditional; standard","She rejected conventional methods for a new approach."],
+["marginal","adj","small; on the edge","The change made only a marginal difference."],
+["synthesize","v","to combine into a whole","A strong essay synthesizes several sources."],
+["enumerate","v","to list one by one","The guide enumerates every step in order."],
+];
+
+const STAGE_SIZE=14;
+const STAGES=[];
+for(let i=0;i<WORDS.length;i+=STAGE_SIZE)STAGES.push(WORDS.slice(i,i+STAGE_SIZE));
+
+/* ===== progress ===== */
+let P={};try{P=JSON.parse(localStorage.getItem('satvocab')||'{}')}catch(e){P={}}
+function save(){try{localStorage.setItem('satvocab',JSON.stringify(P))}catch(e){}}
+function rec(w,ok){const k=P[w]||{s:0,c:0};k.s++;if(ok)k.c++;P[w]=k;save();}
+function mastery(w){const k=P[w];if(!k||k.s===0)return 0;return Math.round(k.c/k.s*100);}
+function stageMastery(arr){const m=arr.map(x=>mastery(x[0]));return Math.round(m.reduce((a,b)=>a+b,0)/arr.length);}
+
+/* ===== util ===== */
+const app=document.getElementById('app');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const norm=s=>(s||'').toString().trim().toLowerCase();
+function cloze(s,w){return s.replace(new RegExp('\\b'+w+'\\b','i'),'______');}
+
+/* ===== home ===== */
+function home(){
+  let h=`<div class="card"><div style="font-weight:800;color:var(--navy);font-size:16px">Pick a stage</div>
+  <div class="sub" style="margin-bottom:8px">${WORDS.length} words total · ${STAGES.length} stages of ${STAGE_SIZE}. Master one before the next.</div>`;
+  STAGES.forEach((arr,i)=>{const m=stageMastery(arr);
+    h+=`<button class="stage" onclick="stageMenu(${i})"><span><span class="t">Stage ${i+1}</span><div class="m">words ${i*STAGE_SIZE+1}–${i*STAGE_SIZE+arr.length}</div><div class="mbar"><div style="width:${m}%"></div></div></span><span class="m">${m}% ›</span></button>`;});
+  h+=`<button class="btn wide sec" onclick="reviewMissed()">🔁 Review my missed words</button></div>`;
+  const coachOn=coachConnected();
+  h+=`<div class="card" style="display:flex;justify-content:space-between;align-items:center">
+    <div><b style="color:var(--navy)">🤖 Coach chatbot</b><div class="sub">${coachOn?'Connected — tap “Ask the coach” on any word.':'Not connected yet — tap Set up and paste your Gemini key.'}</div></div>
+    <button class="btn sec" onclick="setupTutor()">${coachOn?'Edit':'⚙︎ Set up'}</button></div>`;
+  app.innerHTML=h;
+}
+
+/* ===== stage menu (choose mode) ===== */
+let CUR=null; // {words:[], mode:''}
+function stageMenu(i){
+  const arr=STAGES[i];
+  app.innerHTML=`<div class="card"><span class="pill">Stage ${i+1}</span>
+    <div style="font-weight:800;color:var(--navy);font-size:16px">Choose how to practice</div>
+    <div class="sub" style="margin-bottom:8px">${arr.length} words · ${stageMastery(arr)}% mastered</div>
+    <div class="modegrid">
+      <div class="mode" onclick="start(${i},'flash')">🃏 Flashcards<small>see word → flip for meaning</small></div>
+      <div class="mode" onclick="start(${i},'mean')">📖 Meaning<small>word → pick the definition</small></div>
+      <div class="mode" onclick="start(${i},'word')">🔤 Find the word<small>definition → pick the word</small></div>
+      <div class="mode" onclick="start(${i},'recall')">⌨️ Recall<small>type the word from its meaning</small></div>
+      <div class="mode" onclick="start(${i},'context')">📝 In context<small>fill the blank in a sentence</small></div>
+    </div>
+    <button class="btn wide" onclick="start(${i},'mix')">🎯 Mixed review (all modes)</button>
+    <div class="center" style="margin-top:12px"><a class="link" onclick="home()">⌂ Back</a></div></div>`;
+}
+
+/* ===== quiz engine ===== */
+function start(i,mode){CUR={words:shuffle(STAGES[i]),mode,i:0,correct:0,missed:[]};render();}
+function reviewMissed(){
+  const miss=WORDS.filter(x=>{const k=P[x[0]];return k&&k.s>0&&k.c/k.s<0.7;});
+  if(!miss.length){app.innerHTML=`<div class="card center"><div class="big">🎉</div><div>No weak words yet — practice a stage first, and the ones you miss will collect here.</div><button class="btn wide" onclick="home()">Back</button></div>`;return;}
+  CUR={words:shuffle(miss),mode:'mix',i:0,correct:0,missed:[]};render();
+}
+
+function pickMode(){return CUR.mode==='mix'?shuffle(['flash','mean','word','recall','context'])[0]:CUR.mode;}
+
+function render(){
+  if(CUR.i>=CUR.words.length)return summary();
+  const word=CUR.words[CUR.i];const mode=pickMode();CUR._m=mode;
+  const pct=Math.round(CUR.i/CUR.words.length*100);
+  let body='';
+  if(mode==='flash'){
+    body=`<div class="flip" id="flip" onclick="flipCard()">
+      <div class="word">${word[0]}<span class="pos">${word[1]}</span></div>
+      <div class="sub" style="margin-top:10px">tap to flip</div></div>
+      <div id="back" style="display:none"><div class="def">${word[2]}</div><div class="sent">${cloze(word[3],word[0]).replace('______','<b>'+word[0]+'</b>')}</div>
+      <button class="btn sec wide" onclick="askCoach()">🤖 Ask the coach about this</button>
+      <div class="row" style="margin-top:10px"><button class="btn sec" style="flex:1" onclick="flashRate(false)">Review again</button><button class="btn" style="flex:1" onclick="flashRate(true)">I knew it ✓</button></div></div>`;
+  } else if(mode==='mean'){
+    const opts=makeOpts(word,2);body=mc(`What does <b>${word[0]}</b> <span class="pos">${word[1]}</span> mean?`,opts,word[2]);
+  } else if(mode==='word'){
+    const opts=makeOpts(word,0);body=mc(`Which word means: <i>${word[2]}</i>?`,opts,word[0]);
+  } else if(mode==='recall'){
+    body=`<div class="qtext">Type the word that means:</div><div class="def">${word[2]} <span class="pos">(${word[1]})</span></div>
+      <input class="fill" id="fillin" placeholder="the word" autocomplete="off" autocapitalize="none"><button class="btn wide" onclick="checkFill('${word[0]}')">Check</button>`;
+  } else { // context — SAT-style sentence completion
+    const opts=makeOpts(word,0);body=`<div class="qtext" style="font-size:16px;margin-bottom:6px">Which choice completes the text with the most logical and precise word?</div><div class="sent" style="font-style:normal;margin-bottom:8px">${cloze(word[3],word[0])}</div>${optButtons(opts,word[0])}`;
+  }
+  app.innerHTML=`<div class="card"><div class="prog">${CUR.i+1} / ${CUR.words.length} &nbsp;·&nbsp; Score ${CUR.correct}</div>
+    <div class="bar"><div style="width:${pct}%"></div></div>
+    <span class="pill">${({flash:'Flashcard',mean:'Meaning',word:'Find the word',recall:'Recall',context:'In context'})[mode]}</span>
+    <div id="qa">${body}</div></div><div class="center"><a class="link" onclick="home()">⌂ Menu</a></div>`;
+  if(mode==='recall'){const f=document.getElementById('fillin');f.focus();f.addEventListener('keydown',e=>{if(e.key==='Enter')checkFill(word[0]);});}
+}
+
+function makeOpts(word,idx){ // idx 0 -> options are words, 2 -> options are definitions
+  const others=shuffle(WORDS.filter(x=>x[0]!==word[0])).slice(0,3);
+  const opts=shuffle([word,...others]).map(x=>idx===0?x[0]:x[2]);
+  return opts;
+}
+function mc(q,opts,correctText){return `<div class="qtext" style="font-size:17px;margin-bottom:6px">${q}</div>${optButtons(opts,correctText)}`;}
+function optButtons(opts,correct){
+  return opts.map(o=>`<button class="choice" onclick="pick(this,'${enc(o)}','${enc(correct)}')">${o}</button>`).join('');
+}
+const enc=s=>String(s).replace(/'/g,"\\'");
+
+function pick(btn,chosen,correct){
+  const ok=norm(chosen)===norm(correct);
+  const word=CUR.words[CUR.i];
+  [...document.querySelectorAll('.choice')].forEach(b=>{b.classList.add('dim');
+    if(norm(b.textContent)===norm(correct))b.classList.add('correct');});
+  if(!ok)btn.classList.add('wrong');
+  afterAnswer(ok,word,correct);
+}
+function checkFill(w){
+  const val=document.getElementById('fillin').value;const ok=norm(val)===norm(w);
+  document.getElementById('fillin').disabled=true;
+  afterAnswer(ok,CUR.words[CUR.i],w,true);
+}
+function flipCard(){document.getElementById('flip').style.display='none';document.getElementById('back').style.display='block';}
+function flashRate(ok){const word=CUR.words[CUR.i];rec(word[0],ok);if(ok)CUR.correct++;else CUR.missed.push(word);CUR.i++;render();}
+
+function afterAnswer(ok,word,correct,fill){
+  rec(word[0],ok);if(ok)CUR.correct++;else CUR.missed.push(word);
+  const qa=document.getElementById('qa');
+  const extra=document.createElement('div');
+  extra.innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'✓ Correct':'✗ Not quite — '+word[0]+': '+word[2]}</div>
+    <div class="sent" style="margin-top:8px">${cloze(word[3],word[0]).replace('______','<b>'+word[0]+'</b>')}</div>
+    <button class="btn sec wide" onclick="askCoach()">🤖 Ask the coach about this</button>
+    <button class="btn wide" id="nx">${CUR.i+1>=CUR.words.length?'See results':'Next'}</button>`;
+  qa.appendChild(extra);
+  document.getElementById('nx').onclick=()=>{CUR.i++;render();};
+}
+
+function summary(){
+  const tot=CUR.words.length,pct=Math.round(CUR.correct/Math.max(tot,1)*100);
+  let h=`<div class="card center"><div class="big">${CUR.correct}/${tot}</div>
+    <div class="sub">${pct}% ${pct>=85?'— mastered! 🎉':pct>=60?'— almost; review the misses':'— keep going, the misses are the point'}</div>
+    <div class="row" style="justify-content:center;margin-top:14px">`;
+  if(CUR.missed.length)h+=`<button class="btn" onclick="retry()">Retry ${CUR.missed.length} missed</button>`;
+  h+=`<button class="btn sec" onclick="home()">Stages</button></div></div>`;
+  if(CUR.missed.length){h+=`<div class="card"><div style="font-weight:800;color:var(--red);margin-bottom:6px">Words to review</div>`;
+    CUR.missed.forEach(w=>h+=`<div style="padding:7px 0;border-top:1px solid var(--line)"><b style="color:var(--navy)">${w[0]}</b> <span class="pos">${w[1]}</span> — ${w[2]}</div>`);
+    h+=`</div>`;}
+  app.innerHTML=h;
+}
+function retry(){CUR={words:shuffle(CUR.missed),mode:CUR.mode,i:0,correct:0,missed:[]};render();}
+
+/* ===== Coach chatbot (Gemini via your Worker) ===== */
+function getWorker(){try{return localStorage.getItem('coach_url')||''}catch(e){return ''}}
+function getKey(){try{return localStorage.getItem('gemini_key')||''}catch(e){return ''}}
+function coachConnected(){return !!(getWorker()||getKey());}
+var COACH_SYS="You are Coach, a patient SAT vocabulary tutor for one student. Help with the exact word provided (its meaning, usage, why an answer choice was wrong, or more example sentences). Keep replies short, friendly, and plain text. If asked something off-topic, gently steer back to studying.";
+var GEMINI_MODEL="gemini-2.0-flash";
+function setupTutor(){
+  const k=prompt("Paste your Gemini API key — it saves on this device, so you paste it once.\nGet one free at aistudio.google.com → \"Get API key\".\n\nLeave blank to clear.",getKey());
+  if(k!==null){try{localStorage.setItem('gemini_key',k.trim())}catch(e){}}
+  if(k&&k.trim()){alert("Saved — the 🤖 coach is now active.");home();return;}
+  alert("Cleared.");home();
+}
+let CHAT={ctx:null,msgs:[]};
+function askCoach(){
+  const w=CUR.words[CUR.i];
+  CHAT={ctx:{word:w[0],pos:w[1],def:w[2],sent:w[3]},msgs:[]};
+  openChat();
+}
+function openChat(){
+  let ov=document.getElementById('chatov');
+  if(!ov){ov=document.createElement('div');ov.id='chatov';document.body.appendChild(ov);}
+  ov.setAttribute('style','position:fixed;inset:0;background:rgba(20,30,55,.45);display:flex;align-items:flex-end;justify-content:center;z-index:99;');
+  ov.innerHTML=`<div style="background:#fff;width:100%;max-width:680px;border-radius:18px 18px 0 0;max-height:85vh;display:flex;flex-direction:column">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)">
+      <b style="color:var(--navy)">🤖 Coach — "${CHAT.ctx.word}"</b>
+      <span onclick="document.getElementById('chatov').remove()" style="cursor:pointer;font-size:22px;color:var(--gray)">×</span></div>
+    <div id="chatmsgs" style="flex:1;overflow:auto;padding:12px 16px"></div>
+    <div style="display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)">
+      <input id="chatin" class="fill" placeholder="Ask about this word…" autocapitalize="none" style="flex:1">
+      <button class="btn" onclick="sendChat()">Send</button></div></div>`;
+  if(!CHAT.msgs.length){addMsg('assistant',coachConnected()?`Ask me anything about “${CHAT.ctx.word}” — what it means, how it's used, why a choice was wrong, or for more example sentences.`:`The coach isn't connected yet. On the home screen tap “⚙︎ Set up” and paste your Gemini key. Until then, here's the definition: ${CHAT.ctx.word} — ${CHAT.ctx.def}.`);}
+  renderChat();
+}
+function addMsg(role,text){CHAT.msgs.push({role,text});}
+function renderChat(){
+  const box=document.getElementById('chatmsgs');if(!box)return;
+  box.innerHTML=CHAT.msgs.map(m=>{
+    const me=m.role==='user';
+    return `<div style="margin:8px 0;display:flex;justify-content:${me?'flex-end':'flex-start'}">
+      <div style="max-width:85%;padding:9px 12px;border-radius:12px;font-size:14.5px;white-space:pre-wrap;background:${me?'var(--navy)':'#eef3fb'};color:${me?'#fff':'#1a2740'}">${m.text}</div></div>`;
+  }).join('');
+  box.scrollTop=box.scrollHeight;
+}
+async function sendChat(){
+  const inp=document.getElementById('chatin');const text=(inp.value||'').trim();if(!text)return;
+  const url=getWorker(),key=getKey();
+  addMsg('user',text);inp.value='';
+  if(!url&&!key){addMsg('assistant','Set up the coach first: home screen → ⚙︎ Set up → paste your Gemini key.');renderChat();return;}
+  addMsg('assistant','…');renderChat();
+  const hist=CHAT.msgs.filter(m=>m.text!=='…').slice(0,-1).map(m=>({role:m.role,text:m.text}));
+  const ctxLine=`The student is studying the SAT word "${CHAT.ctx.word}" (${CHAT.ctx.pos}), which means: ${CHAT.ctx.def}. Example sentence: ${CHAT.ctx.sent}`;
+  try{
+    let reply;
+    if(url){
+      const r=await fetch(url.replace(/\/+$/,'')+'/tutor',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({question:{subtopic:'Vocabulary (words in context)',text:ctxLine,correct:CHAT.ctx.word,explanation:CHAT.ctx.def},history:hist,message:text})});
+      const d=await r.json();reply=d.reply||'(no reply)';
+    }else{
+      const contents=[{role:'user',parts:[{text:COACH_SYS+'\n\n'+ctxLine}]},{role:'model',parts:[{text:'Ready to help with this word.'}]}];
+      hist.forEach(m=>contents.push({role:m.role==='assistant'?'model':'user',parts:[{text:m.text}]}));
+      contents.push({role:'user',parts:[{text:text}]});
+      const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+GEMINI_MODEL+':generateContent?key='+encodeURIComponent(key),
+        {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents,generationConfig:{temperature:0.4,maxOutputTokens:500}})});
+      const d=await r.json();
+      reply=((d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)||[]).map(p=>p.text).join('')||(d.error&&d.error.message?'Gemini error: '+d.error.message:'(no reply)');
+    }
+    CHAT.msgs[CHAT.msgs.length-1]={role:'assistant',text:reply};
+  }catch(e){CHAT.msgs[CHAT.msgs.length-1]={role:'assistant',text:'Could not reach the coach. Check your key / internet.'};}
+  renderChat();
+}
+
+home();
+</script>
