@@ -267,8 +267,21 @@ function afterAnswer(ok,word,correct,fill){
   rec(word[0],ok);if(ok)CUR.correct++;else CUR.missed.push(word);
   const qa=document.getElementById('qa');
   const extra=document.createElement('div');
-  extra.innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'✓ Correct':'✗ Not quite — '+word[0]+': '+word[2]}</div>
-    <div class="sent" style="margin-top:8px">${cloze(word[3],word[0]).replace('______','<b>'+word[0]+'</b>')}</div>
+  const m=CUR._m;
+  let why;
+  if(m==='context') why=`The blank needs a word meaning “${word[2]}” — that's exactly what <b>${word[0]}</b> means, so it's the best fit. The other choices don't carry that meaning in this sentence.`;
+  else if(m==='word') why=`Of the four options, only <b>${word[0]}</b> means “${word[2]}.”`;
+  else if(m==='recall') why=`The word that means “${word[2]}” is <b>${word[0]}</b>.`;
+  else why=`<b>${word[0]}</b> means “${word[2]}” — that's the matching definition.`;
+  const expStyle="margin-top:10px;background:#f6f9ff;border-left:4px solid var(--blue);border-radius:8px;padding:11px 13px;font-size:14.5px;line-height:1.5";
+  extra.innerHTML=`<div class="fb ${ok?'ok':'no'}">${ok?'✓ Correct':'✗ Not quite'}</div>
+    <div style="${expStyle}">
+      <div style="font-weight:800;color:var(--navy)">${word[0]} <span class="pos">${word[1]}</span></div>
+      <div style="margin:3px 0 7px">${word[2]}</div>
+      <div><b style="color:var(--blue)">Why:</b> ${why}</div>
+      <div style="margin-top:7px"><b style="color:var(--blue)">In a sentence:</b> <i>${cloze(word[3],word[0]).replace('______','<b>'+word[0]+'</b>')}</i></div>
+      <div style="margin-top:7px;color:var(--gray);font-size:13px">Want a deeper explanation, a synonym, or another example? Tap “Ask the coach.”</div>
+    </div>
     <button class="btn sec wide" onclick="askCoach()">🤖 Ask the coach about this</button>
     <button class="btn wide" id="nx">${CUR.i+1>=CUR.words.length?'See results':'Next'}</button>`;
   qa.appendChild(extra);
@@ -294,7 +307,7 @@ function getWorker(){try{return localStorage.getItem('coach_url')||''}catch(e){r
 function getKey(){try{return localStorage.getItem('gemini_key')||''}catch(e){return ''}}
 function coachConnected(){return !!(getWorker()||getKey());}
 var COACH_SYS="You are Coach, a patient SAT vocabulary tutor for one student. Help with the exact word provided (its meaning, usage, why an answer choice was wrong, or more example sentences). Keep replies short, friendly, and plain text. If asked something off-topic, gently steer back to studying.";
-var GEMINI_MODEL="gemini-2.0-flash";
+var GEMINI_MODEL="gemini-2.5-flash";
 function setupTutor(){
   const k=prompt("Paste your Gemini API key — it saves on this device, so you paste it once.\nGet one free at aistudio.google.com → \"Get API key\".\n\nLeave blank to clear.",getKey());
   if(k!==null){try{localStorage.setItem('gemini_key',k.trim())}catch(e){}}

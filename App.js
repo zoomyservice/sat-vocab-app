@@ -17,7 +17,7 @@ const norm = (s) => (s||"").toString().trim().toLowerCase();
 const cloze = (s,w) => s.replace(new RegExp("\\b"+w+"\\b","i"),"______");
 const MODE_LABEL = { flash:"Flashcard", mean:"Meaning", word:"Find the word", recall:"Recall", context:"In context" };
 const COACH_SYS = "You are Coach, a patient SAT vocabulary tutor for one student. Help with the exact word provided (its meaning, usage, why an answer choice was wrong, or more example sentences). Keep replies short, friendly, and plain (no markdown headers). If asked something off-topic, gently steer back to studying.";
-const GEMINI_MODEL = "gemini-2.0-flash";
+const GEMINI_MODEL = "gemini-2.5-flash";
 
 export default function App() {
   const [prog, setProg] = useState({});         // word -> {s, c}
@@ -203,10 +203,18 @@ function Quiz({ view, setView, recordAttempt, workerUrl, geminiKey }) {
 
     {answered && curMode!=="flash" && (<View>
       <View style={[s.fb, view._ok ? s.fbOk : s.fbNo]}>
-        <Text style={{ color: view._ok?C.green:C.red, fontWeight:"700" }}>
-          {view._ok ? "✓ Correct" : `✗ Not quite — ${word[0]}: ${word[2]}`}</Text></View>
-      <Text style={[s.sent,{ marginTop:8 }]}>{cloze(word[3],word[0]).replace("______", word[0])}</Text>
-      <Btn sec title="🤖 Ask the coach about this" style={{ marginTop:10 }} onPress={() => setChat(true)} />
+        <Text style={{ color: view._ok?C.green:C.red, fontWeight:"700" }}>{view._ok ? "✓ Correct" : "✗ Not quite"}</Text></View>
+      <View style={s.expBox}>
+        <Text style={{ fontWeight:"800", color:C.navy }}>{word[0]} <Text style={s.pos}>{word[1]}</Text></Text>
+        <Text style={{ marginVertical:4 }}>{word[2]}</Text>
+        <Text><Text style={{ fontWeight:"800", color:C.blue }}>Why: </Text>{
+          curMode==="context" ? `The blank needs a word meaning “${word[2]}” — that's what ${word[0]} means, so it fits; the other choices don't.`
+          : curMode==="word" ? `Of the choices, only ${word[0]} means “${word[2]}.”`
+          : curMode==="recall" ? `The word meaning “${word[2]}” is ${word[0]}.`
+          : `${word[0]} means “${word[2]}.”`}</Text>
+        <Text style={{ marginTop:6 }}><Text style={{ fontWeight:"800", color:C.blue }}>In a sentence: </Text><Text style={{ fontStyle:"italic" }}>{cloze(word[3],word[0]).replace("______", word[0])}</Text></Text>
+      </View>
+      <Btn sec title="🤖 Ask the coach for a deeper explanation" style={{ marginTop:10 }} onPress={() => setChat(true)} />
       <Btn title={i+1>=words.length ? "See results" : "Next"} style={{ marginTop:10 }} onPress={next} />
     </View>)}
 
@@ -357,6 +365,7 @@ const s = StyleSheet.create({
   barFill:{ height:"100%", backgroundColor:C.blue },
   flip:{ minHeight:150, justifyContent:"center", alignItems:"center" },
   fb:{ borderRadius:10, padding:11, marginTop:12 }, fbOk:{ backgroundColor:C.greenbg }, fbNo:{ backgroundColor:C.redbg },
+  expBox:{ marginTop:8, backgroundColor:"#f6f9ff", borderLeftWidth:4, borderLeftColor:C.blue, borderRadius:8, padding:11 },
   link:{ color:C.blue, fontWeight:"700" },
   mode:{ width:"48.5%", borderWidth:1.5, borderColor:C.line, borderRadius:12, padding:13, marginBottom:9, alignItems:"center" },
   modeT:{ fontWeight:"700", color:C.navy, fontSize:14, textAlign:"center" }, modeD:{ color:C.gray, fontSize:11.5, marginTop:3, textAlign:"center" },
